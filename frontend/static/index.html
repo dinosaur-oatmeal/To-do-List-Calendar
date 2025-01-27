@@ -1,89 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo List</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Todo List with Calendar</title>
+    <!-- CSS file -->
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <h1>Todo List</h1>
+    <h1>Todo List with Calendar</h1>
 
-    <!-- Add item to list -->
-    <input type="text" id="newItem" placeholder="New Todo">
+    <!-- Todo typing box and date selector -->
+    <div class="add-todo">
+    
+    <!-- Typing box for new item -->
+    <input type="text" id="newItem" placeholder="New Todo" />
+
+    <!-- Date selector -->
+    <input type="date" id="todoDate" />
+
+    <!-- Store items as "input text||YYYY-MM-DD" -->
     <button onclick="addItem()">Add</button>
-    <ul id="todoList"></ul>
+    </div>
 
-    <script>
-        // Point to backend server address
-        const API_URL = "http://localhost:8000";
+    <!-- Calendar Embed -->
+    <div id="calendar-container" class="calendar-container">
+    <div class="calendar-header">
 
-        async function fetchTodos() {
-            // Get request to /todos of API
-            const response = await fetch(`${API_URL}/todos`);
-            const todos = await response.json();
-            const list = document.getElementById('todoList');
+        <!-- Month Buttons -->
+        <button id="prevMonth" class="nav-button" onclick="prevMonth()">&lt;</button>
+        <h2 id="calendarMonthYear"></h2>
+        <button id="nextMonth" class="nav-button" onclick="nextMonth()">&gt;</button>
+    </div>
+    <!-- Calendar Day Grid -->
+    <div id="calendarGrid" class="calendar-grid"></div>
+    </div>
 
-            // Clear current list
-            list.innerHTML = '';
-
-            // Create delete button for each todo
-            todos.forEach(todo => {
-                const li = document.createElement('li');
-                li.textContent = todo.content;
-                const deleteBtn = document.createElement('button');
-
-                // Delete button
-                deleteBtn.textContent = 'Delete';
-                deleteBtn.onclick = () => deleteItem(todo._id);
-
-                // Appends todo to list
-                li.appendChild(deleteBtn);
-                list.appendChild(li);
-            });
-        }
-
-        async function addItem() {
-            const input = document.getElementById('newItem');
-            // Remove whitespace
-            if (input.value.trim() !== '')
-            {
-                // Send new todo item to backend
-                const response = await fetch(`${API_URL}/todos`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ content: input.value }),
-                });
-                // If successful, clear input field and fetchTodos
-                if (response.ok) {
-                    input.value = '';
-                    fetchTodos();
-                }
-            }
-        }
-
-        async function deleteItem(id) {
-            // Call /todos/{id} to backend with ID of todo item to delete
-            const response = await fetch(`${API_URL}/todos/${id}`, {
-                method: 'DELETE',
-            });
-            // If successful, fetch todos
-            if (response.ok)
-            {
-                fetchTodos();
-            }
-            
-            // Throw error if fails
-            else
-            {
-                console.error(`Failed to delete todo with id: ${id}`);
-            }
-        }
-
-        // Fetch todos on page load
-        fetchTodos();
-    </script>
+    <!-- JS file -->
+    <script src="script.js"></script>
 </body>
 </html>
